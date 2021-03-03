@@ -1,3 +1,2 @@
 deezloader
-pylast
 git+https://github.com/Phyco-Ninja/spotify-downloader
