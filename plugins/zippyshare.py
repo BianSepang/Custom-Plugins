@@ -8,20 +8,22 @@ import re
 import requests
 
 from userge import userge, Message, pool
-from userge.plugins.misc.download import url_download
 
 
 @userge.on_cmd("zippy", about={
-    'header': "Download from Zippyshare website",
+    'header': "generate Direct link of zippyshare url",
     'usage': "{tr}zippy : [Zippyshare Link ]",
     'examples': "{tr}zippy https://www10.zippyshare.com/v/dyh988sh/file.html"}, del_pre=True)
 async def zippyshare(message: Message):
-    """ zippy to direct and automatically download """
+    """ zippy to direct """
     url = message.input_str
+    await message.edit("`Generating url ....`")
     try:
-        direct_url = await _generate_zippylink(url)
-        dl_loc, dl_time = await url_download(message, direct_url)
-        await message.edit(f"Downloaded to `{dl_loc}` in {dl_time} seconds.")
+        direct_url, fname = await _generate_zippylink(url)
+        await message.edit(f"**Original** : {url}\n**FileName** : `{fname}`\n"
+                           f"**DirectLink** : {direct_url}\n\n"
+                           "**[HINT]** : use `.download [directLink]`",
+                           disable_web_page_preview=True)
     except Exception as z_e:  # pylint: disable=broad-except
         await message.edit(f"`{z_e}`")
 
@@ -60,4 +62,4 @@ def _generate_zippylink(url):
         val = val_1 + val_2 % val_3
         name = match.group(3)
         d_l = "https://www{}.zippyshare.com/d/{}/{}/{}".format(server, id_, val, name)
-    return d_l
+    return d_l, name
