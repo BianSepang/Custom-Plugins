@@ -1,2 +1,2 @@
-deezloader
+git+https://github.com/TomyPrs/deezloader
 git+https://github.com/Phyco-Ninja/spotify-downloader
