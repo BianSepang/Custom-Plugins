@@ -1,8 +1,8 @@
 import os
 import re
-import requests
 from urllib.parse import quote
 
+import requests
 from aiohttp import ClientSession
 
 from userge import userge, Message
