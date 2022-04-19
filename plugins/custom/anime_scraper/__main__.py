@@ -171,10 +171,13 @@ async def wibudesu_scraper(message: Message):
             content += f"[{anime_title.h1.text}]({input_str})\n\n"
 
             # Anime Download Links
-            header_dl = anime_section.find("p", attrs={"style": "text-align: center;"})
+            header_dl = [
+                p for p in anime_section.find_all("p", attrs={"style": "text-align: center;"})
+                if p.strong
+            ][0]
             content += f"**{header_dl.strong.text}**\n"
             for p_tag in anime_section.find_all("p")[1:]:
-                if p_tag.has_attr("style") and "LINK" not in p_tag.strong.text:
+                if p_tag.has_attr("style") and p_tag.strong and "LINK" not in p_tag.strong.text:
                     content += f"\n**{p_tag.strong.text}**\n"
                 if (
                     not p_tag.has_attr("style")
