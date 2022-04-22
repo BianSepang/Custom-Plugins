@@ -207,3 +207,41 @@ async def wibudesu_scraper(message: Message):
                 )
             finally:
                 await msg_obj.delete()
+
+
+@userge.on_cmd(
+    "otakudesu", about = {
+        "header": "Anime Scraper for Otakudesu",
+        "description": "Get anime download links from Otakudesu",
+        "flags": {"-s": "for searching from otakudesu"},
+        "examples": "{tr}wibudesu https://wibudesu.com/vinland-saga-bd-subtitle-indonesia \n"
+                    "{tr}wibudesu -s Vinland Saga"})
+async def otakudesu_scraper(message: Message):
+    input_str = message.filtered_input_str
+    content = ""
+
+    async with ClientSession() as ses:
+        async with ses.get(input_str) as req:
+            soup = BeautifulSoup(await req.text(), "html.parser")
+
+    batchlink = soup.find("div", class_="batchlink")
+    anime_banner = soup.find(
+        "img",
+        class_="attachment-post-thumbnail size-post-thumbnail wp-post-image"
+    )
+    content += f"{batchlink.find('text').text}\n"
+    for link in batchlink.find_all("li"):
+        reso = link.find("h4").text
+        size = link.find("i").text
+        links = [
+            f"[{x.text}]({x['href']})"
+            for x in link.find_all("a")
+            if x.has_attr("href")
+        ]
+        content += f"**{reso}** - {' | '.join(links)} __({size})__\n"
+
+    await message.reply_photo(
+        photo=anime_banner,
+        caption=content,
+        quote=True,
+    )
