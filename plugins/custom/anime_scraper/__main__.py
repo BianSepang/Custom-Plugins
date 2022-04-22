@@ -226,9 +226,9 @@ async def otakudesu_scraper(message: Message):
         async with ses.get(input_str) as req:
             soup = BeautifulSoup(await req.text(), "html.parser")
 
-    batchlink = soup.find("div", class_="batchlink")
-    content += f"{batchlink.find('h4').text}\n"
-    for link in batchlink.find_all("li"):
+    dl_section = soup.find("div", class_="download")
+    content += f"{dl_section.find('h4').text}\n"
+    for link in dl_section.find_all("li"):
         reso = link.find("strong").text
         size = link.find("i").text
         links = [
