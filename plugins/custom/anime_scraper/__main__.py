@@ -1,9 +1,11 @@
+import os
 import re
 
+import wget
 from aiohttp import ClientSession
 from bs4 import BeautifulSoup
 from pyrogram.errors.exceptions.bad_request_400 import MediaCaptionTooLong
-from userge import Message, userge
+from userge import Message, pool, userge
 
 
 @userge.on_cmd(
@@ -225,10 +227,11 @@ async def otakudesu_scraper(message: Message):
             soup = BeautifulSoup(await req.text(), "html.parser")
 
     batchlink = soup.find("div", class_="batchlink")
-    anime_banner = soup.find(
+    banner_src = soup.find(
         "img",
         class_="attachment-post-thumbnail size-post-thumbnail wp-post-image"
     )["src"]
+    anime_banner = await pool.run_in_thread(wget.download)(banner_src)
     content += f"{batchlink.find('h4').text}\n"
     for link in batchlink.find_all("li"):
         reso = link.find("strong").text
@@ -245,3 +248,4 @@ async def otakudesu_scraper(message: Message):
         caption=content,
         quote=True,
     )
+    os.remove(anime_banner)
