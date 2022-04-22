@@ -228,7 +228,7 @@ async def otakudesu_scraper(message: Message):
     anime_banner = soup.find(
         "img",
         class_="attachment-post-thumbnail size-post-thumbnail wp-post-image"
-    )
+    )["src"]
     content += f"{batchlink.find('h4').text}\n"
     for link in batchlink.find_all("li"):
         reso = link.find("strong").text
