@@ -229,9 +229,9 @@ async def otakudesu_scraper(message: Message):
         "img",
         class_="attachment-post-thumbnail size-post-thumbnail wp-post-image"
     )
-    content += f"{batchlink.find('text').text}\n"
+    content += f"{batchlink.find('h4').text}\n"
     for link in batchlink.find_all("li"):
-        reso = link.find("h4").text
+        reso = link.find("strong").text
         size = link.find("i").text
         links = [
             f"[{x.text}]({x['href']})"
