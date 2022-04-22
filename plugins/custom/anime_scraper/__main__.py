@@ -227,11 +227,6 @@ async def otakudesu_scraper(message: Message):
             soup = BeautifulSoup(await req.text(), "html.parser")
 
     batchlink = soup.find("div", class_="batchlink")
-    banner_src = soup.find(
-        "img",
-        class_="attachment-post-thumbnail size-post-thumbnail wp-post-image"
-    )["src"]
-    anime_banner = await pool.run_in_thread(wget.download)(banner_src)
     content += f"{batchlink.find('h4').text}\n"
     for link in batchlink.find_all("li"):
         reso = link.find("strong").text
@@ -243,9 +238,8 @@ async def otakudesu_scraper(message: Message):
         ]
         content += f"**{reso}** - {' | '.join(links)} __({size})__\n"
 
-    await message.reply_photo(
-        photo=anime_banner,
-        caption=content,
+    await message.reply_or_send_as_file(
+        text=content,
         quote=True,
+        disable_web_page_preview=True,
     )
-    os.remove(anime_banner)
