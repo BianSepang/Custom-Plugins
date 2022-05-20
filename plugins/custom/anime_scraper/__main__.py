@@ -165,35 +165,24 @@ async def wibudesu_scraper(message: Message):
             except BaseException as err:
                 return await msg_obj.err(str(err))
 
-            anime_section = soup.find("div", class_="lexot")
+            # Anime title and banner
+            anime_title = soup.find("h1", class_="entry-title").text
+            anime_banner = soup.find(
+                "img",
+                class_="ts-post-image wp-post-image attachment-medium size-medium"
+            )
+            content = f"**{anime_title}**\n\n"
 
-            # Anime Info
-            anime_banner = anime_section.find("img").get("data-lazy-src")
-            anime_title = soup.find("div", class_="jdlr")
-            content += f"[{anime_title.h1.text}]({input_str})\n\n"
-
-            # Anime Download Links
-            header_dl = [
-                p for p in anime_section.find_all("p", attrs={"style": "text-align: center;"})
-                if p.strong
-            ][0]
-            content += f"**{header_dl.strong.text}**\n"
-            for p_tag in anime_section.find_all("p")[1:]:
-                if p_tag.has_attr("style") and p_tag.strong and "LINK" not in p_tag.strong.text:
-                    content += f"\n**{p_tag.strong.text}**\n"
-                if (
-                    not p_tag.has_attr("style")
-                    and p_tag.find("a")
-                    and "Sinopsis" not in p_tag.strong.text
-                ):
-                    reso = p_tag.strong.text.replace("[", "(").replace("]", ")")
-                    content += f"__{reso}__\n"
-                    links = [
-                        f"[{link.text.strip()}]({link.get('href')})"
-                        for link in p_tag.find_all("a")
-                    ]
-                    content += f" | ".join(links)
-                    content += "\n"
+            # Anime download links
+            for soraddl in soup.find_all("div", class_="soraddl dltwo"):
+                header = soraddl.find("div", class_="sorattl").h3.text
+                content += f"{header}\n" if header else ""
+                for soraurl in soraddl.find_all("div", class_="soraurl"):
+                    reso = soraurl.find("div", class_="res").text
+                    links = [f"[{a.text}({a.get('href')})" for a in soraurl.find_all("a")]
+                    content += f"{reso} - {' | '.join(links)}\n"
+                content += "\n"
+            content = content.strip("\n")
 
             try:
                 await message.reply_photo(
