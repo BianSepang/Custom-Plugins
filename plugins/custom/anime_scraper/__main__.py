@@ -126,7 +126,7 @@ async def wibudesu_scraper(message: Message):
         if search_mode:
             try:
                 async with ses.get(
-                    "https://wibudesu.com/", params={"s": input_str, "post_type": "post"}
+                    "https://wibudesu.co/", params={"s": input_str, "post_type": "post"}
                 ) as resp:
                     soup = BeautifulSoup(await resp.text(), "html.parser")
             except BaseException as err:
@@ -157,7 +157,7 @@ async def wibudesu_scraper(message: Message):
             )
             await msg_obj.edit(msg, disable_web_page_preview=True)
         else:
-            if not re.search(r"https?://(?:www\.)?wibudesu\.com/(?:.+)/?", input_str):
+            if not re.search(r"https?://(?:www\.)?wibudesu\.co/(?:.+)/?", input_str):
                 return await message.err("`Please enter valid wibudesu link!`")
             try:
                 async with ses.get(input_str) as resp:
