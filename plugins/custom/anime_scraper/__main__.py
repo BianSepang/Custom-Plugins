@@ -1,11 +1,15 @@
 import os
 import re
 
-import wget
 from aiohttp import ClientSession
 from bs4 import BeautifulSoup
+from fake_headers import Headers
 from pyrogram.errors.exceptions.bad_request_400 import MediaCaptionTooLong
+
 from userge import Message, pool, userge
+
+
+HEADERS = Headers().generate()
 
 
 @userge.on_cmd(
@@ -27,7 +31,7 @@ async def kuso_scraper(message: Message):
     if not input_str:
         return await msg_obj.err("`Please enter a query to search/scrape!`")
 
-    async with ClientSession() as ses:
+    async with ClientSession(headers=HEADERS) as ses:
         if search_mode:
             try:
                 async with ses.get(
@@ -122,7 +126,7 @@ async def wibudesu_scraper(message: Message):
     if not input_str:
         return await msg_obj.err("`Please enter a query to search/scrape!`")
 
-    async with ClientSession() as ses:
+    async with ClientSession(headers=HEADERS) as ses:
         if search_mode:
             try:
                 async with ses.get(
@@ -165,12 +169,8 @@ async def wibudesu_scraper(message: Message):
             except BaseException as err:
                 return await msg_obj.err(str(err))
 
-            # Anime title and banner
+            # Anime title
             anime_title = soup.find("h1", class_="entry-title").text
-            anime_banner = soup.find(
-                "img",
-                class_="ts-post-image wp-post-image attachment-medium size-medium"
-            )
             content = f"**{anime_title}**\n\n"
 
             # Anime download links
@@ -184,9 +184,19 @@ async def wibudesu_scraper(message: Message):
                 content += "\n"
             content = content.strip("\n")
 
+            # Download anime banner
+            anime_banner = soup.find(
+                "img",
+                class_="ts-post-image wp-post-image attachment-medium size-medium"
+            ).get("data-lazy-src")
+            banner_name = anime_banner.split("/")[-1]
+            async with ses.get(anime_banner) as resp_img:
+                with open(banner_name, "wb") as file:
+                    file.write(await resp_img.content())
+
             try:
                 await message.reply_photo(
-                    photo=anime_banner,
+                    photo=banner_name,
                     caption=content,
                     quote=True,
                 )
@@ -197,6 +207,7 @@ async def wibudesu_scraper(message: Message):
                     disable_web_page_preview=True,
                 )
             finally:
+                os.remove(banner_name)
                 await msg_obj.delete()
 
 
