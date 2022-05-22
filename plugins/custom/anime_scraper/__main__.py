@@ -192,7 +192,7 @@ async def wibudesu_scraper(message: Message):
             banner_name = anime_banner.split("/")[-1]
             async with ses.get(anime_banner) as resp_img:
                 with open(banner_name, "wb") as file:
-                    file.write(await resp_img.content())
+                    file.write(await resp_img.content)
 
             try:
                 await message.reply_photo(
