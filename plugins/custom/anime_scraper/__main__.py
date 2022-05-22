@@ -179,7 +179,7 @@ async def wibudesu_scraper(message: Message):
                 content += f"{header}\n" if header else ""
                 for soraurl in soraddl.find_all("div", class_="soraurl"):
                     reso = soraurl.find("div", class_="res").text
-                    links = [f"[{a.text}({a.get('href')})" for a in soraurl.find_all("a")]
+                    links = [f"[{a.text}]({a.get('href')})" for a in soraurl.find_all("a")]
                     content += f"{reso} - {' | '.join(links)}\n"
                 content += "\n"
             content = content.strip("\n")
