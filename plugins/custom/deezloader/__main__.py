@@ -17,8 +17,8 @@ import deezloader  # pylint: disable=W0406
 from deezloader.exceptions import NoDataApi
 
 from userge import userge, Message, pool
+from userge.plugins.misc.upload import doc_upload, audio_upload
 from . import ARL_TOKEN
-from ..upload import doc_upload, audio_upload
 
 Clogger = userge.getCLogger(__name__)
 
