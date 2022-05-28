@@ -1,15 +1,27 @@
+""" deezloader """
+
+# Copyright (C) 2020-2022 by UsergeTeam@Github, < https://github.com/UsergeTeam >.
+#
+# This file is part of < https://github.com/UsergeTeam/Userge > project,
+# and is released under the "GNU v3.0 License Agreement".
+# Please see < https://github.com/UsergeTeam/Userge/blob/master/LICENSE >
+#
+# All rights reserved.
+
 import os
 import re
 import shutil
 from pathlib import Path
+
 import deezloader  # pylint: disable=W0406
 from deezloader.exceptions import NoDataApi
 
 from userge import userge, Message, pool
-from userge.plugins.misc.upload import doc_upload, audio_upload
+from . import ARL_TOKEN
+from ..upload import doc_upload, audio_upload
 
 Clogger = userge.getCLogger(__name__)
-ARL_TOKEN = os.environ.get("ARL_TOKEN")
+
 TEMP_PATH = 'deezdown_temp/'
 REX = re.compile(r"https?:\/\/(open\.spotify|www\.deezer)\.com\/"
                  r"(track|album|playlist)\/[A-Z0-9a-z]{3,}")
