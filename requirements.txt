@@ -1,3 +1,0 @@
-https://github.com/tomyprs/deezloader/archive/master.zip
-git+https://github.com/Phyco-Ninja/spotify-downloader
-yt-dlp
