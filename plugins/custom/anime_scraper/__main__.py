@@ -130,26 +130,20 @@ async def wibudesu_scraper(message: Message):
         if search_mode:
             try:
                 async with ses.get(
-                    "https://wibudesu.co/", params={"s": input_str, "post_type": "post"}
+                    "https://wibudesu.co/", params={"s": input_str}
                 ) as resp:
                     soup = BeautifulSoup(await resp.text(), "html.parser")
             except BaseException as err:
                 return await msg_obj.err(str(err))
 
-            n_result = 0
-            for post_section in soup.find_all("div", attrs={"class": "detpost"}):
-                anime_title = post_section.find("a").get("title")
-                anime_url = post_section.find("a").get("href")
-                genre = [
-                    genre.text
-                    for genre in post_section.find_all("a", attrs={"rel": "category tag"})
-                    if all(x not in genre.text for x in ["Version", "Uncategorized"])
-                ]
-                content += (
-                    f"• [{anime_title}]({anime_url})\n"
-                    f"**Genre :** __{', '.join(genre)}__\n\n"
-                )
-                n_result += 1
+            search_content = soup.find_all("a", attrs={"class": "tip", "itemprop": "url"})
+            n_result = len(search_content)
+
+            for result in search_content:
+                anime_title = result.get("title")
+                anime_link = result.get("href")
+                anime_score = result.find("div", class_="numscore").text
+                content += (f"• [{anime_title}]({anime_link})\nScore : {anime_score}\n\n")
 
             if not n_result:
                 content = "__No result found.__"
