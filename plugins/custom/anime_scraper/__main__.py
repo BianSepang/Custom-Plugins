@@ -143,7 +143,7 @@ async def wibudesu_scraper(message: Message):
                 anime_title = result.get("title")
                 anime_link = result.get("href")
                 anime_score = result.find("div", class_="numscore").text
-                content += (f"• [{anime_title}]({anime_link})\nScore : {anime_score}\n\n")
+                content += (f"• [{anime_title}]({anime_link})\n**Score :** __{anime_score}__\n\n")
 
             if not n_result:
                 content = "__No result found.__"
