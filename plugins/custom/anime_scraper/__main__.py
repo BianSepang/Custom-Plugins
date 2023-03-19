@@ -44,17 +44,14 @@ async def kuso_scraper(message: Message):
                 title = post.find("h2", class_="episodeye").text
                 link = post.find("h2", class_="episodeye").a.get("href")
                 content += f"{idx}. [{title}]({link})"
-                genres = [f"[{a.text}]({a.get('href')})" for a in post.find_all("a", attrs={"rel": "tag"})]
-                content += f"\nGenre : {', '.join(genres)}"
+                genres = [a.text for a in post.find_all("a", attrs={"rel": "tag"})]
+                content += f"\n**Genre :** __{', '.join(genres)}__"
                 content += "\n\n"
 
-            content += f"**Kusonime Homepage | Last {idx} Releases\n\n{content}**"
+            content = f"**Kusonime Homepage | Last {idx} Releases\n\n{content}**"
 
-            return await message.reply_or_send_as_file(
-                text=content,
-                quote=True,
-                disable_web_page_preview=True,
-            )
+            await msg_obj.edit_or_send_as_file(text=content, disable_web_page_preview=True)
+            return
 
         if search_mode:
             try:
