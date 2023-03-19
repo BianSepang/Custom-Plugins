@@ -22,21 +22,41 @@ HEADERS = Headers().generate()
 async def kuso_scraper(message: Message):
     input_str = message.filtered_input_str
     content = ""
+    base_url = "https://kusonime.com"
     msg_obj = await message.edit("`Getting information...`")
 
     search_mode = False
     if "-s" in message.flags:
-        search_mode=True
+        search_mode = True
 
-    if not input_str:
-        return await msg_obj.err("`Please enter a query to search/scrape!`")
+    if search_mode and not input_str:
+        return await msg_obj.err("`Please enter a query to search!`")
 
     async with ClientSession(headers=HEADERS) as ses:
+        if not message.input_str:
+            try:
+                async with ses.get(base_url) as resp:
+                    soup = BeautifulSoup(await resp.text(), "html.parser")
+            except BaseException as err:
+                return await msg_obj.err(err)
+
+            for idx, post in enumerate(soup.find_all("div", class_="detpost"), start=1):
+                title = post.find("h2", class_="episodeye").text
+                link = post.find("h2", class_="episodeye").a.get("href")
+                content += f"{idx}. [{title}]({link})"
+                genres = [f"[{a.text}]({a.get('href')})" for a in post.find_all("a", attrs={"rel": "tag"})]
+                content += f"Genre : {', '.join(genres)}"
+                content += "\n\n"
+
+            return await message.reply_or_send_as_file(
+                text=content,
+                quote=True,
+                disable_web_page_preview=True,
+            )
+
         if search_mode:
             try:
-                async with ses.get(
-                    "https://kusonime.com", params={"s": input_str}
-                ) as resp:
+                async with ses.get(base_url, params={"s": input_str}) as resp:
                     soup = BeautifulSoup(await resp.text(), "html.parser")
             except BaseException as err:
                 return await msg_obj.err(err)
