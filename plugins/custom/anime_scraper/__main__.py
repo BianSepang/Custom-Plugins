@@ -97,11 +97,11 @@ async def kuso_scraper(message: Message):
             content += "\n"
 
             # Get anime link
-            for smokeddl in soup.find_all("div", class_="smokeddl"):
-                for smokettl in smokeddl.find_all("div", class_="smokettl"):
+            for smokeddl in soup.find_all("div", class_=re.compile("smokeddl.*")):
+                for smokettl in smokeddl.find_all("div", class_=re.compile("smokettl.*")):
                     dl_head = smokettl.text
                     content += f"**{dl_head}**\n"
-                for smokeurl in smokeddl.find_all("div", class_="smokeurl"):
+                for smokeurl in smokeddl.find_all("div", class_=re.compile("smokeurl.*")):
                     reso = smokeurl.find("strong").text
                     content += f"__{reso}__\n"
                     links = [
